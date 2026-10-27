@@ -1,0 +1,7 @@
+# Normalize text files across Windows, macOS, and Linux contributors.
+* text=auto eol=lf
+
+# Keep binary report assets byte-for-byte unchanged.
+*.png binary
+*.pkl binary
+*.joblib binary

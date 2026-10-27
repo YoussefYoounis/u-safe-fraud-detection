@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-SAFE | Enterprise Risk Intelligence</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js للرسم البياني التفاعلي -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="background-glow"></div>
+    <div class="app-container">
+
+        <!-- Header / Hero Section -->
+        <header class="hero-card glass-card">
+            <div class="badge"><span class="pulse-dot"></span> U-SAFE Engine v2.4</div>
+            <h1 class="hero-title">U-SAFE Risk Intelligence</h1>
+            <p class="hero-subtitle">Intelligent Real-Time Risk & Fraud Intelligence System</p>
+            <p class="hero-subtext">U-SAFE Engine — Real-time credit card transaction fraud detection powered by
+                advanced Machine Learning</p>
+        </header>
+
+        <!-- Form Section: All 10 Features Included -->
+        <section class="glass-card form-section">
+            <div class="card-header">
+                <h2>📊 Transaction Parameters</h2>
+                <p>Enter payment telemetry to perform real-time AI risk evaluation</p>
+            </div>
+
+            <form id="riskForm" class="inputs-grid">
+                <!-- 1. Transaction Amount -->
+                <div class="field-group">
+                    <label for="TransactionAmt">Transaction Amount ($)</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="TransactionAmt" step="0.01" value="100.00" required>
+                    </div>
+                </div>
+
+                <!-- 2. Card Type (card4) -->
+                <div class="field-group">
+                    <label for="card4">Card Type</label>
+                    <select id="card4">
+                        <option value="visa" selected>visa</option>
+                        <option value="mastercard">mastercard</option>
+                        <option value="american express">american express</option>
+                        <option value="discover">discover</option>
+                    </select>
+                </div>
+
+                <!-- 3. Card Category (card6) -->
+                <div class="field-group">
+                    <label for="card6">Card Category</label>
+                    <select id="card6">
+                        <option value="debit" selected>debit</option>
+                        <option value="credit">credit</option>
+                    </select>
+                </div>
+
+                <!-- 4. Device Type -->
+                <div class="field-group">
+                    <label for="DeviceType">Device Type</label>
+                    <select id="DeviceType">
+                        <option value="desktop" selected>desktop</option>
+                        <option value="mobile">mobile</option>
+                    </select>
+                </div>
+
+                <!-- 5. Email Domain -->
+                <div class="field-group">
+                    <label for="P_emaildomain">Email Domain</label>
+                    <select id="P_emaildomain">
+                        <option value="gmail.com" selected>gmail.com</option>
+                        <option value="yahoo.com">yahoo.com</option>
+                        <option value="hotmail.com">hotmail.com</option>
+                        <option value="anonymous.com">anonymous.com</option>
+                        <option value="aol.com">aol.com</option>
+                    </select>
+                </div>
+
+                <!-- 6. Product Type (ProductCD) -->
+                <div class="field-group">
+                    <label for="ProductCD">Product Type</label>
+                    <select id="ProductCD">
+                        <option value="W" selected>Web Service (W)</option>
+                        <option value="H">Hardware / Home Goods (H)</option>
+                        <option value="C">Credit / Cash Services (C)</option>
+                        <option value="S">Services / Subscriptions (S)</option>
+                        <option value="R">Retail Goods (R)</option>
+                    </select>
+                </div>
+
+                <!-- 7. Billing Address State (addr1) -->
+                <div class="field-group">
+                    <label for="addr1">Billing Address State (US Code: 1-50)</label>
+                    <input type="number" id="addr1" min="1" max="50" value="1" required>
+                </div>
+
+                <!-- 8. Hour of Day -->
+                <div class="field-group">
+                    <label for="hour_of_day">Hour of Day (0-23)</label>
+                    <input type="number" id="hour_of_day" min="0" max="23" value="12" required>
+                </div>
+
+                <!-- 9. Day of Week -->
+                <div class="field-group">
+                    <label for="day_of_week">Day of Week</label>
+                    <select id="day_of_week">
+                        <option value="0" selected>Monday</option>
+                        <option value="1">Tuesday</option>
+                        <option value="2">Wednesday</option>
+                        <option value="3">Thursday</option>
+                        <option value="4">Friday</option>
+                        <option value="5">Saturday</option>
+                        <option value="6">Sunday</option>
+                    </select>
+                </div>
+
+                <!-- 10. Night Transaction -->
+                <div class="field-group">
+                    <label for="is_night_transaction">Night Transaction (10PM - 6AM)</label>
+                    <select id="is_night_transaction">
+                        <option value="0" selected>No (0)</option>
+                        <option value="1">Yes (1)</option>
+                    </select>
+                </div>
+            </form>
+
+            <div class="button-bar">
+                <button type="button" class="btn btn-primary" onclick="predictFraud()">
+                    <span>🚨 Scan Transaction</span>
+                </button>
+                <button type="reset" form="riskForm" class="btn btn-secondary" onclick="resetUI()">
+                    <span>🔄 Reset Parameters</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Results Display Container -->
+        <div id="resultsWrapper" class="hidden">
+
+            <!-- Main Prediction Banner -->
+            <section class="glass-card main-status-card" id="statusCard">
+                <div class="status-icon" id="statusIcon">💎</div>
+                <h1 id="predictionTitle" class="prediction-title">LEGITIMATE</h1>
+                <p id="confidenceBanner" class="confidence-banner">Confidence: 0.0%</p>
+            </section>
+
+            <!-- KPI Metric Cards -->
+            <section class="kpi-grid">
+                <div class="glass-card kpi-card">
+                    <span class="kpi-title">🚨 Fraud Probability</span>
+                    <h2 id="fraudProbVal" class="kpi-value">0.0%</h2>
+                    <span id="fraudTrend" class="kpi-trend trend-down">↓ 0.0%</span>
+                </div>
+                <div class="glass-card kpi-card">
+                    <span class="kpi-title">💎 Legitimate Probability</span>
+                    <h2 id="legitProbVal" class="kpi-value">0.0%</h2>
+                    <span id="legitTrend" class="kpi-trend trend-up">↑ 0.0%</span>
+                </div>
+                <div class="glass-card kpi-card">
+                    <span class="kpi-title">✨ Model Confidence</span>
+                    <h2 id="confidenceVal" class="kpi-value">0.0%</h2>
+                </div>
+            </section>
+
+            <!-- Key Driving Factors Table & Chart Section -->
+            <section class="glass-card factors-section">
+                <div class="card-header">
+                    <h2>🔍 Key Driving Factors</h2>
+                    <p>Importance scores and inputs triggering the model response</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Importance Score</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="factorsTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="chart-container">
+                    <h4>Top Driving Factors Visualization</h4>
+                    <canvas id="importanceChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Transaction Summary -->
+            <section class="glass-card summary-section">
+                <div class="card-header">
+                    <h2>📄 Transaction Summary</h2>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-box">
+                        <h4>User-Provided Features:</h4>
+                        <table class="summary-table" id="userFeaturesTable"></table>
+                    </div>
+                    <div class="summary-box">
+                        <h4>Prediction Metadata:</h4>
+                        <table class="summary-table" id="metadataTable"></table>
+                    </div>
+                </div>
+
+                <div class="alert-success">
+                    ✅ Prediction completed successfully!
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
